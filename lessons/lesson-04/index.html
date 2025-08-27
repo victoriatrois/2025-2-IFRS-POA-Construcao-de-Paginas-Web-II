@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My first vue app</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.global.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <h1>{{ message }}</h1>
+      <p>{{ `by ${name}` }}</p>
+      <input
+        type="number"
+        v-model="number1"
+        @change="addNumbersOneAndTwo"
+        id="number1"
+        style="width: 50px"
+      />
+      +
+      <input
+        type="number"
+        v-model="number2"
+        @change="addNumbersOneAndTwo"
+        id="number2"
+        style="width: 50px"
+      />
+      = {{ result }}
+      <!-- <button @click="addNumbersOneAndTwo">Add</button> -->
+      <h2>Operation History:</h2>
+      <ul>
+        <li v-for="(previousOperation, index) in operationHistory" :key="index">
+          {{ previousOperation }}
+        </li>
+      </ul>
+    </div>
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            message: "Hello Vue in CPW2!",
+            name: "Victoria",
+            number1: 0,
+            number2: 0,
+            result: 0,
+            resultHistory: [],
+            operationHistory: [],
+          };
+        },
+        methods: {
+          addNumbersOneAndTwo() {
+            this.result = this.number1 + this.number2;
+            this.saveOperation();
+          },
+          saveOperation() {
+            this.operationHistory.push(
+              `${this.number1} + ${this.number2} = ${this.result}`
+            );
+          },
+        },
+      });
+      app.mount("#app");
+    </script>
+  </body>
+</html>
