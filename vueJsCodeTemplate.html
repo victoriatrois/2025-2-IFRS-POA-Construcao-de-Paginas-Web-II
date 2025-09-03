@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue 3 Template</title>
+    <!-- Vue 3 CDN (ES module version) -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.esm-browser.prod.js"
+    ></script>
+    <!-- Add any global CSS or libraries here -->
+  </head>
+  <body>
+    <div id="app">
+      <!-- Template content goes here -->
+      <h1>{{ title }}</h1>
+    </div>
+
+    <script type="module">
+      // --- IMPORTS ---
+      // Vue is already available globally via ES module
+      import {
+        ref,
+        reactive,
+        computed,
+      } from "https://cdn.jsdelivr.net/npm/vue@3/dist/vue.esm-browser.prod.js";
+
+      // Example: importing a library as ES module
+      // import { someFunction } from 'https://cdn.jsdelivr.net/npm/some-library@version/dist/module.js';
+
+      // --- VUE APP ---
+      const app = Vue.createApp({
+        setup() {
+          // --- STATE ---
+          const title = ref("Hello Vue 3 Composition API!");
+          const count = ref(0);
+
+          // --- COMPUTED ---
+          const doubled = computed(() => count.value * 2);
+
+          // --- METHODS ---
+          function increment() {
+            count.value++;
+          }
+
+          // --- RETURN TO TEMPLATE ---
+          return {
+            title,
+            count,
+            doubled,
+            increment,
+          };
+        },
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>
