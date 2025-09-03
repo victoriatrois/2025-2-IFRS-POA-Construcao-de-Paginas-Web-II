@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Left to do - Vue 3 Composition API</title>
+    <script type="module">
+      import {
+        createApp,
+        ref,
+      } from "https://cdn.jsdelivr.net/npm/vue@3/dist/vue.esm-browser.prod.js";
+
+      const app = createApp({
+        setup() {
+          // --- STATE ---
+          const today = ref(getTodaysDate());
+          const tasks = ref([]);
+          const newTask = ref("");
+          const tasksHistory = ref([]);
+
+          // --- METHODS ---
+          function getTodaysDate() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, "0");
+            const month = String(today.getMonth() + 1).padStart(2, "0");
+            const year = today.getFullYear();
+            return `${day}/${month}/${year}`;
+          }
+
+          function createNewTask() {
+            if (newTask.value.trim() !== "") {
+              tasks.value.push({
+                id: Date.now(),
+                text: newTask.value,
+              });
+              newTask.value = "";
+            }
+          }
+
+          function completeTask(index) {
+            const completedTask = tasks.value[index];
+            tasks.value.splice(index, 1);
+            tasksHistory.value.push(completedTask.text);
+          }
+
+          // --- RETURN TO TEMPLATE ---
+          return {
+            today,
+            tasks,
+            newTask,
+            tasksHistory,
+            createNewTask,
+            completeTask,
+          };
+        },
+      });
+
+      app.mount("#app");
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Todo on {{ today }}</h1>
+
+      <label for="newTask">Type and hit enter to add a new task</label>
+      <input
+        type="text"
+        id="newTask"
+        v-model="newTask"
+        @change="createNewTask"
+        style="width: 150px; margin-left: 5px"
+      />
+
+      <div style="margin: 10px 0 10px 0">
+        Check a task to remove it from the list
+      </div>
+
+      <div v-for="(task, index) in tasks" :key="task.id">
+        <label style="cursor: pointer">
+          <input type="checkbox" @click="completeTask(index)" />
+          {{ task.text }}
+        </label>
+      </div>
+
+      <div>
+        <h2>Completed tasks</h2>
+        <ul style="text-decoration: line-through">
+          <li v-for="(task, index) in tasksHistory" :key="index">{{ task }}</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,17 +8,68 @@
   </head>
   <body>
     <div id="app">
-      <h1>Todo {{ today }}</h1>
+      <h1>Todo on {{ today }}</h1>
+      <label for="newTask">Type and hit enter to add a new task</label>
+      <input
+        type="text"
+        v-model="newTask"
+        @change="createNewTask"
+        id="newTask"
+        style="width: 150px; margin-left: 5px"
+      />
+      <div style="margin: 10px 0 10px 0">
+        Check a task to remove it from the list
+      </div>
+      <div v-for="(task, index) in tasks" :key="task.id">
+        <label style="cursor: pointer">
+          <input type="checkbox" @click="completeTask(index)" />
+          {{ task.text }}
+        </label>
+      </div>
+      <div>
+        <h2>Completed tasks</h2>
+        <ul style="text-decoration: line-through">
+          <li v-for="(task, index) in tasksHistory" :key="index">{{ task }}</li>
+        </ul>
+      </div>
     </div>
+
     <script>
       const app = Vue.createApp({
         data() {
           return {
-            today: this.getToday(),
+            today: this.getTodaysDate(),
+            tasks: [],
+            newTask: "",
+            completedTask: "",
+            tasksHistory: [],
           };
         },
         methods: {
-          getToday() {},
+          getTodaysDate() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, "0");
+            const month = String(today.getMonth() + 1).padStart(2, "0");
+            const year = today.getFullYear();
+            return day + "/" + month + "/" + year;
+          },
+          createNewTask() {
+            if (this.newTask.trim() !== "") {
+              this.tasks.push({
+                id: Date.now(),
+                text: this.newTask,
+              });
+              this.newTask = "";
+            }
+          },
+          completeTask(index) {
+            const completedTask = this.tasks[index];
+            this.tasks.splice(index, 1);
+            this.tasksHistory.push(completedTask.text);
+          },
+          logCompletedTask(completedTask) {
+            this.tasksHistory.push(completedTask);
+          },
         },
       });
       app.mount("#app");
