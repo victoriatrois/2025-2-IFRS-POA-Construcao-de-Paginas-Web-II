@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.global.min.js"></script>
+    <title>Componentes Vue.js</title>
+  </head>
+  <body>
+    <div id="app">
+      <h1>{{ title }}</h1>
+      <div v-for="(image, index) in images" :key="index">
+        <my-image
+          v-bind:image-source="image.imageSource"
+          v-bind:alternative-text="image.alternativeText"
+        />
+      </div>
+    </div>
+    <script type="module">
+      import MyImage from "./MyImage.js";
+      let app = Vue.createApp({
+        data() {
+          return {
+            title: "Componentes Vue.js",
+            images: [
+              {
+                imageSource: "image1.jpg",
+                alternativeText: "Descrição da imagem 1",
+              },
+              {
+                imageSource: "image2.jpg",
+                alternativeText: "Descrição da imagem 2",
+              },
+              {
+                imageSource: "image3.jpg",
+                alternativeText: "Descrição da imagem 3",
+              },
+            ],
+          };
+        },
+      });
+      app.component("my-image", MyImage);
+      app.mount("#app");
+    </script>
+  </body>
+</html>
