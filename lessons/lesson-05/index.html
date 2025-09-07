@@ -15,9 +15,23 @@
           v-bind:alternative-text="image.alternativeText"
         />
       </div>
+
+      <!-- Use o nome registrado "my-todo" -->
+      <my-todo
+        list-name="Todo"
+        informational-text="Type and hit enter to add a new task"
+        :tasks="tasks"
+        :show-history="true"
+        :task-history="tasksHistory"
+        @task-added="handleTaskAdded"
+        @task-completed="handleTaskCompleted"
+      />
     </div>
+
     <script type="module">
       import MyImage from "./MyImage.js";
+      import Todo from "./Todo.js";
+
       let app = Vue.createApp({
         data() {
           return {
@@ -36,10 +50,30 @@
                 alternativeText: "Descrição da imagem 3",
               },
             ],
+            tasks: [
+              { id: 1, text: "Learn Vue" },
+              { id: 2, text: "Build a component" },
+            ],
+            tasksHistory: [],
           };
         },
+        methods: {
+          handleTaskAdded(task) {
+            this.tasks.push(task);
+          },
+          handleTaskCompleted(task) {
+            const index = this.tasks.findIndex((t) => t.id === task.id);
+            if (index !== -1) {
+              this.tasks.splice(index, 1);
+              this.tasksHistory.push(task.text);
+            }
+          },
+        },
       });
+
       app.component("my-image", MyImage);
+      app.component("my-todo", Todo);
+
       app.mount("#app");
     </script>
   </body>
