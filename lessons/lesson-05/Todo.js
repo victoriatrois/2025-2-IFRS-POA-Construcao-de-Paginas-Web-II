@@ -6,11 +6,18 @@ export default {
       type: String,
       default: "Type and hit enter to add a new task",
     },
-    tasks: Array,
+    tasks: {
+      type: Array,
+      default: () => [],
+      editing: {
+        type: Boolean,
+        default: false,
+      },
+    },
     showHistory: Boolean,
     taskHistory: Array,
   },
-  emits: ["task-added", "task-completed"],
+  emits: ["task-added", "task-completed", "task-deleted", "task-edited"],
   setup(props, { emit }) {
     const newTask = Vue.ref("");
 
@@ -27,6 +34,7 @@ export default {
         emit("task-added", {
           id: Date.now(),
           text: newTask.value,
+          editing: false,
         });
         newTask.value = "";
       }
@@ -36,11 +44,35 @@ export default {
       emit("task-completed", task);
     }
 
+    function editTask(task) {
+      emit("task-edited", task);
+      task.editing = !task.editing;
+      console.log("task.editing", task.editing);
+      console.log("Editing function called");
+    }
+
+    function deleteTask(task) {
+      props.tasks.splice(props.tasks.indexOf(task), 1);
+      emit("task-deleted", task);
+      console.log(`Deleted task: ${task.text}`);
+    }
+
+    function handleAction(action, task) {
+      if (action === "Edit") {
+        editTask(task);
+      } else if (action === "Delete") {
+        deleteTask(task);
+      }
+    }
+
     return {
       newTask,
       getTodaysDate,
       createNewTask,
       completeTask,
+      editTask,
+      deleteTask,
+      handleAction,
     };
   },
   template: `
@@ -53,18 +85,27 @@ export default {
       v-model="newTask"
       @change="createNewTask"
       id="newTask"
-      style="width: 150px; margin-left: 5px"
+      class="border border-gray-300 rounded px-2 py-1"
     />
 
     <div style="margin: 10px 0 10px 0">
-      Check a task to remove it from the list
+      Check a task to remove it from the list, or use the buttons to edit or delete it.
     </div>
 
-    <div v-for="(task, index) in tasks" :key="task.id">
-      <label style="cursor: pointer">
-        <input type="checkbox" @click="completeTask(task)" />
-        {{ task.text }}
+    <div v-for="(task, index) in tasks" :key="task.id"class="flex items-center gap-x-3 mb-2">
+      <label >
+        <input type="checkbox" @click="completeTask(task)" class="border border-gray-300 rounded px-2 py-1 w-4 h-4"/>
+        <div v-if="!task.editing" style="display: inline">
+          {{ task.text }}
+        </div>
+        <div v-else style="display: inline">
+          <input type="text" v-model="task.text" id="editTask" class="border border-gray-300 rounded px-2 py-1"/>
+        </div>
       </label>
+      <action-menu
+        :actions="['Edit', 'Delete']"
+        @action-selected="handleAction($event, task)"
+      />
     </div>
 
     <div v-if="showHistory && taskHistory.length > 0">

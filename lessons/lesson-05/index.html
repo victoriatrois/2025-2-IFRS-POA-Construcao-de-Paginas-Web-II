@@ -3,36 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.global.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>Componentes Vue.js</title>
   </head>
   <body>
-    <div id="app">
+    <div id="app" class="m-4">
       <h1>{{ title }}</h1>
-      <div v-for="(image, index) in images" :key="index">
+      <div v-for="(image, index) in images" :key="index" class="mb-4">
         <my-image
           v-bind:image-source="image.imageSource"
           v-bind:alternative-text="image.alternativeText"
         />
       </div>
 
-      <!-- Use o nome registrado "my-todo" -->
-      <my-todo
-        list-name="Todo"
-        informational-text="Type and hit enter to add a new task"
-        :tasks="tasks"
-        :show-history="true"
-        :task-history="tasksHistory"
-        @task-added="handleTaskAdded"
-        @task-completed="handleTaskCompleted"
-      />
+      <div>
+        <todo
+          list-name="Todo"
+          informational-text="Type and hit enter to add a new task"
+          :tasks="tasks"
+          :show-history="true"
+          :task-history="tasksHistory"
+          @task-added="handleTaskAdded"
+          @task-completed="handleTaskCompleted"
+        />
+      </div>
     </div>
 
     <script type="module">
       import MyImage from "./MyImage.js";
       import Todo from "./Todo.js";
+      import ActionMenu from "./ActionMenu.js";
 
-      let app = Vue.createApp({
+      const app = Vue.createApp({
         data() {
           return {
             title: "Componentes Vue.js",
@@ -51,10 +54,11 @@
               },
             ],
             tasks: [
-              { id: 1, text: "Learn Vue" },
-              { id: 2, text: "Build a component" },
+              { id: 1, text: "Learn Vue", editing: false },
+              { id: 2, text: "Build a component", editing: false },
             ],
             tasksHistory: [],
+            actions: ["Edit", "Delete", "Share"],
           };
         },
         methods: {
@@ -68,12 +72,16 @@
               this.tasksHistory.push(task.text);
             }
           },
+
+          handleMoreActions(action) {
+            console.log("Parent received action:", action);
+          },
         },
       });
 
       app.component("my-image", MyImage);
-      app.component("my-todo", Todo);
-
+      app.component("todo", Todo);
+      app.component("action-menu", ActionMenu);
       app.mount("#app");
     </script>
   </body>
